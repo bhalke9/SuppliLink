@@ -7,7 +7,7 @@ import com.wecp.progressive.entity.Product;
 public class ProductDAOImpl implements ProductDAO{
     
     public int addProduct(Product product){
-        return 1;
+        return -1;
     }
     public Product getProductById(int productId){
         return null;
@@ -19,7 +19,7 @@ public class ProductDAOImpl implements ProductDAO{
 
     }
     public List<Product> getAllProducts(){
-        return null;
+        return List.of();
     }
 
 }
