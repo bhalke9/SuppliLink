@@ -1,70 +1,154 @@
 package com.wecp.progressive.dao;
 
 import java.util.List;
+import java.sql.*;
+import java.util.*;
 
+import com.wecp.progressive.config.DatabaseConnectionManager;
 import com.wecp.progressive.entity.Warehouse;
 
-public class WarehouseDAOImpl implements WarehouseDAO{
+public class WarehouseDAOImpl implements WarehouseDAO {
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        // TODO Auto-generated method stub
-        return super.clone();
+    public int addWarehouse(Warehouse warehouse) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        int generatedID = -1;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "INSERT INTO warehouse (supplier_id, warehouse_name, location, capacity) VALUES (?, ?, ?, ?)";
+            statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            statement.setInt(1, warehouse.getSupplierId());
+            statement.setString(2, warehouse.getWarehouseName());
+            statement.setString(3, warehouse.getLocation());
+            statement.setDouble(4, warehouse.getCapacity());
+            statement.executeUpdate();
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                generatedID = resultSet.getInt(1);
+                warehouse.setWarehouseId(generatedID);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow the exception
+        } finally {
+            // Close resources in the reverse order of opening
+            if (statement != null) {
+                statement.close();
+            }
+        }
+        return generatedID;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        // TODO Auto-generated method stub
-        return super.equals(obj);
-    }
+    public Warehouse getWarehouseById(int warehouseId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
-    @Override
-    protected void finalize() throws Throwable {
-        // TODO Auto-generated method stub
-        super.finalize();
-    }
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "SELECT * FROM warehouse WHERE warehouse_id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, warehouseId);
+            resultSet = statement.executeQuery();
 
-    @Override
-    public int hashCode() {
-        // TODO Auto-generated method stub
-        return super.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
-    }
-
-    @Override
-    public int addWarehouse(Warehouse warehouse) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void deleteWarehouse(int warehouseId) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public List<Warehouse> getAllWarehouse() {
-        // TODO Auto-generated method stub
+            if (resultSet.next()) {
+                int supplierId = resultSet.getInt("supplier_id");
+                String warehouseName = resultSet.getString("warehouse_name");
+                String location = resultSet.getString("location");
+                int capacity = resultSet.getInt("capacity");
+                return new Warehouse(warehouseId, supplierId, warehouseName, location, capacity);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow the exception
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
         return null;
     }
 
     @Override
-    public Warehouse getWarehouseById(int warehouseId) {
-        // TODO Auto-generated method stub
-        return null;
+    public void updateWarehouse(Warehouse warehouse) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "UPDATE warehouse SET supplier_id =?, warehouse_name =?, location =?, capacity =? WHERE warehouse_id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, warehouse.getSupplierId());
+            statement.setString(2, warehouse.getWarehouseName());
+            statement.setString(3, warehouse.getLocation());
+            statement.setInt(4, warehouse.getCapacity());
+            statement.setInt(5, warehouse.getWarehouseId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow the exception
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
 
     @Override
-    public void updateWarehouse(Warehouse warehouse) {
-        // TODO Auto-generated method stub
-        
-    }
-    
+    public void deleteWarehouse(int warehouseId) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
 
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "DELETE FROM warehouse WHERE warehouse_id = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, warehouseId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow the exception
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Warehouse> getAllWarehouse() throws SQLException {
+        List<Warehouse> warehouses = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseConnectionManager.getConnection();
+            String sql = "SELECT * FROM warehouse";
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int warehouseId = resultSet.getInt("warehouse_id");
+                int supplierId = resultSet.getInt("supplier_id");
+                String warehouseName = resultSet.getString("warehouse_name");
+                String location = resultSet.getString("location");
+                int capacity = resultSet.getInt("capacity");
+                warehouses.add(new Warehouse(warehouseId, supplierId, warehouseName, location, capacity));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow the exception
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
+
+        return warehouses;
+    }
 }

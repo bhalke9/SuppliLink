@@ -1,5 +1,6 @@
 package com.wecp.progressive.service.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -16,80 +17,50 @@ public class SupplierServiceImplJdbc  implements SupplierService {
     public SupplierServiceImplJdbc(SupplierDAO supplierDAO) {
         this.supplierDAO = supplierDAO;
     }
+
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        // TODO Auto-generated method stub
-        return super.clone();
+    public int addSupplier(Supplier supplier) throws SQLException {
+        return supplierDAO.addSupplier(supplier);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        // TODO Auto-generated method stub
-        return super.equals(obj);
+    public void deleteSupplier(int supplierId)  throws SQLException{
+        supplierDAO.deleteSupplier(supplierId);
+        
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        // TODO Auto-generated method stub
-        super.finalize();
+    public void emptyArrayList() throws SQLException{
+        supplierList.clear();
+       
     }
 
     @Override
-    public int hashCode() {
+    public List<Supplier> getAllSuppliers() throws SQLException{
+        return supplierDAO.getAllSuppliers();
         // TODO Auto-generated method stub
-        return super.hashCode();
+       
     }
 
     @Override
-    public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
-    }
-
-    @Override
-    public int addSupplier(Supplier supplier) {
-        // TODO Auto-generated method stub
-        supplierList.add(supplier);
-        return 0;
-    }
-
-    @Override
-    public void deleteSupplier(int supplierId) {
-        // TODO Auto-generated method stub
-        //SupplierService.super.deleteSupplier(supplierId);
-    }
-
-    @Override
-    public void emptyArrayList() {
-        // TODO Auto-generated method stub
-        SupplierService.super.emptyArrayList();
-    }
-
-    @Override
-    public List<Supplier> getAllSuppliers() {
-        // TODO Auto-generated method stub
-        return supplierList;
-    }
-
-    @Override
-    public List<Supplier> getAllSuppliersSortedByName() {
-        List<Supplier> sortedSupplir = supplierList;
-        sortedSupplir.sort(Comparator.comparing(Supplier::getSupplierName));
-        return sortedSupplir;
+    public List<Supplier> getAllSuppliersSortedByName() throws SQLException {
+        List<Supplier> sortedSuppliers = supplierDAO.getAllSuppliers();
+        if (sortedSuppliers != null) {
+            sortedSuppliers.sort(Comparator.comparing(Supplier::getSupplierName)); // Sort by supplier name
+        }
+        return sortedSuppliers;
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public Supplier getSupplierById(int supplierId) {
-        // TODO Auto-generated method stub
-        return SupplierService.super.getSupplierById(supplierId);
+    public Supplier getSupplierById(int supplierId) throws SQLException {
+        return supplierDAO.getSupplierById(supplierId);
     }
 
     @Override
-    public void updateSupplier(Supplier supplier) {
-        // TODO Auto-generated method stub
-        SupplierService.super.updateSupplier(supplier);
+    public void updateSupplier(Supplier supplier) throws SQLException{
+        supplierDAO.updateSupplier(supplier);
     }
     
 
