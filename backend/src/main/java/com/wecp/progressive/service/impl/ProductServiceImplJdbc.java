@@ -3,10 +3,12 @@ package com.wecp.progressive.service.impl;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.wecp.progressive.dao.ProductDAO;
 import com.wecp.progressive.entity.Product;
 import com.wecp.progressive.service.ProductService;
-
+@Service
 public class ProductServiceImplJdbc implements ProductService  {
 
     private ProductDAO productDAO;

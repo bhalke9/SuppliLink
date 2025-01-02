@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class Product {
 
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productId;
     private int warehouseId;
